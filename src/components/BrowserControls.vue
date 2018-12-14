@@ -1,19 +1,32 @@
 <template>
   <div class="browser-controls">
-    <form class="browser-controls__form" @submit.prevent="emitSubmit">
+    <div v-if="address"
+class="browser-controls__avatar">
+      <Identicon :address="address" />
+    </div>
+    <form class="browser-controls__form"
+@submit.prevent="emitSubmit">
       <div class="browser-controls__input">
-        <v-input
+        <VInput
           :value="value"
-          :disabled="disabled"
+          :disabled="!authorized || loading"
           placeholder="Enter dapp url..."
           @input="emitInput"
         />
       </div>
       <div class="browser-controls__button">
-        <v-button :disabled="!value || disabled" type="submit">Open</v-button>
+        <VButton
+          :disabled="isButtonDisabled"
+          type="primary"
+          :submit="authorized"
+          @click="emitAuth"
+        >
+          {{ buttonLabel }}
+        </VButton>
       </div>
     </form>
-    <Message v-if="error" :danger="true">{{ error }}</Message>
+    <Message
+v-if="error" :danger="true"> {{ error }} </Message>
   </div>
 </template>
 
@@ -21,6 +34,7 @@
 import VButton from './VButton.vue';
 import VInput from './VInput.vue';
 import Message from './Message.vue';
+import Identicon from './Identicon.vue';
 
 export default {
   name: 'BrowserControls',
@@ -31,7 +45,7 @@ export default {
       default: '',
     },
 
-    disabled: {
+    loading: {
       type: Boolean,
       default: false,
     },
@@ -39,6 +53,36 @@ export default {
     error: {
       type: String,
       default: null,
+    },
+
+    address: {
+      type: String,
+      default: null,
+    },
+  },
+
+  computed: {
+    authorized() {
+      return !!this.address;
+    },
+
+    isButtonDisabled() {
+      const { authorized, loading, value } = this;
+
+      if (!authorized) return false;
+
+      return loading || !value;
+    },
+
+    buttonLabel() {
+      if (this.loading) {
+        return 'Loading...';
+      }
+      if (this.authorized) {
+        return 'Open';
+      }
+
+      return 'Sign in';
     },
   },
 
@@ -50,11 +94,18 @@ export default {
     emitInput(value) {
       this.$emit('input', value);
     },
+
+    emitAuth() {
+      if (!this.authorized) {
+        this.$emit('auth');
+      }
+    },
   },
 
   components: {
     VButton,
     VInput,
+    Identicon,
     Message,
   },
 };
@@ -62,11 +113,18 @@ export default {
 
 <style lang="postcss">
 .browser-controls {
-  padding: 10px;
-  background-color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+}
+
+.browser-controls__avatar {
+  flex: 0 0 auto;
+  margin-right: 16px;
 }
 
 .browser-controls__form {
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
 }

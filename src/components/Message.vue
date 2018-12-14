@@ -1,5 +1,6 @@
 <template>
-  <p :class="{ message: true, danger: danger }"><slot></slot></p>
+  <p :class="{ message: true, danger: danger }"><slot />
+</p>
 </template>
 
 <script>
