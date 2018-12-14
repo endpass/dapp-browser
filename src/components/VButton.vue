@@ -1,11 +1,11 @@
 <template>
   <button
-    :class="{ button: true, disabled: disabled }"
+    :class="{ button: true, [type]: type, disabled: disabled }"
     :disabled="disabled"
-    :type="type"
+    :type="buttonType"
     @click="emitClick"
   >
-    <slot></slot>
+    <slot />
   </button>
 </template>
 
@@ -21,7 +21,18 @@ export default {
 
     type: {
       type: String,
-      default: 'button',
+      default: null,
+    },
+
+    submit: {
+      type: Boolean,
+      default: false,
+    },
+  },
+
+  computed: {
+    buttonType() {
+      return this.submit ? 'submit' : 'button';
     },
   },
 
@@ -35,15 +46,22 @@ export default {
 
 <style lang="postcss">
 .button {
-  padding: 6px 12px;
-  background: #4b0472;
+  height: 45px;
+  padding: 6.5px 15px;
   border: none;
-  font-size: 16px;
-  color: #fff;
+  background: transparent;
+  line-height: 1.5;
+  font-size: 20px;
+  font-weight: 600;
   cursor: pointer;
 
+  &.primary {
+    background: #4b0472;
+    color: #fff;
+  }
+
   &.disabled {
-    background: #5d4769;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 }

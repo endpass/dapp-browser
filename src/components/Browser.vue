@@ -1,30 +1,33 @@
 <template>
   <div class="browser">
-    <section class="browser__controls">
+    <section v-if="inited"
+class="browser__controls">
       <BrowserControls
         v-model="url"
-        :disabled="loading"
+        :loading="loading"
+        :address="accountData.activeAccount"
         :error="error"
         @submit="handleControlsSubmit"
+        @auth="handleAuthRequest"
         @reset="handleControlsReset"
-      ></BrowserControls>
+      />
     </section>
     <section class="browser__frame">
       <iframe
         v-if="loading || loaded"
         v-show="loaded"
+        ref="viewer"
         class="browser__viewer"
         :src="dappUrl"
-        ref="viewer"
         @load="handleViewerLoad"
-      ></iframe>
+      />
     </section>
   </div>
 </template>
 
 <script>
-import get from 'lodash.get';
-import { mapState, mapMutations } from 'vuex';
+import { get } from 'lodash';
+import { mapState, mapMutations, mapActions } from 'vuex';
 import BrowserControls from '@/components/BrowserControls';
 
 export default {
@@ -32,11 +35,13 @@ export default {
 
   data: () => ({
     url: '',
+    inited: false,
     error: null,
   }),
 
   computed: {
     ...mapState({
+      accountData: state => state.dapp.accountData,
       loading: state => state.dapp.loading,
       loaded: state => state.dapp.loaded,
     }),
@@ -54,6 +59,7 @@ export default {
 
   methods: {
     ...mapMutations(['changeLoadStatus', 'changeLoadingStatus']),
+    ...mapActions(['auth', 'getAccountData', 'inject']),
 
     handleControlsSubmit() {
       this.changeLoadingStatus(true);
@@ -61,6 +67,14 @@ export default {
 
     handleControlsReset() {
       this.url = '';
+    },
+
+    async handleAuthRequest() {
+      try {
+        await this.auth();
+      } catch (err) {
+        console.error('auth error: ', err);
+      }
     },
 
     handleUrlChange() {
@@ -71,16 +85,25 @@ export default {
 
     handleViewerLoad() {
       try {
-        get(this.$refs.viewer.contentWindow, 'location');
+        const { viewer } = this.$refs;
+        get(viewer.contentWindow, 'location');
 
         this.changeLoadStatus(true);
+        this.inject(viewer.contentWindow);
       } catch (err) {
+        console.log(err);
         this.error =
           'Page is not loaded. Try load other page or reload current.';
       } finally {
         this.changeLoadingStatus(false);
       }
     },
+  },
+
+  async created() {
+    await this.getAccountData();
+
+    this.inited = true;
   },
 
   components: {
@@ -90,7 +113,15 @@ export default {
 </script>
 
 <style lang="postcss">
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
 .browser {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -98,9 +129,14 @@ export default {
 
 .browser__controls {
   flex: 0 0 auto;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 1;
+  width: 100%;
+  background-color: #fff;
   box-shadow: 0 5px 20px 0px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.65s;
 }
 
 .browser__frame {
@@ -115,9 +151,9 @@ export default {
 
 .browser__viewer {
   position: absolute;
-  top: 0;
+  top: 70px;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 70px);
 }
 </style>

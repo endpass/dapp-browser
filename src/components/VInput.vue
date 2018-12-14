@@ -7,7 +7,7 @@
     :disabled="disabled"
     @keypress="emitKeypress"
     @input="emitInput"
-  />
+  >
 </template>
 
 <script>
@@ -49,9 +49,19 @@ export default {
   border: none;
   outline: none;
   border-radius: 0;
-  padding: 6px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #4d4d4d;
   font-size: 16px;
+  line-height: 1.5;
   transition: 0.25s;
+  background: transparent;
+
+  &.invalid {
+    border-bottom: 1px solid #f00;
+  }
+
+  &.disabled {
+    color: #4d4d4d;
+  }
 }
 </style>

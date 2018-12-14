@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-const changeInitStatus = (state, status) => {
+const changeInjectStatus = (state, status) => {
   state.injected = status;
 };
 
@@ -28,10 +28,15 @@ const changeLoadingStatus = (state, status) => {
   state.loading = status;
 };
 
+const setAccountData = (state, data) => {
+  state.accountData = data;
+};
+
 export default {
   addRequest,
   removeRequest,
-  changeInitStatus,
+  changeInjectStatus,
   changeLoadStatus,
   changeLoadingStatus,
+  setAccountData,
 };
