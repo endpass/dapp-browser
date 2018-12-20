@@ -1,7 +1,7 @@
 import EndpassConnect from 'endpass-connect';
 
 const connect = new EndpassConnect({
-  appUrl: 'http://localhost:5000',
+  appUrl: ENV.connect.url,
   subscribe: true,
 });
 

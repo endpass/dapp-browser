@@ -1,20 +1,19 @@
 import { connect } from '@/class/singleton';
 
-const inject = ({ state, commit, dispatch }, dappWindow) => {
+const inject = async ({ state, commit, dispatch }, dappWindow) => {
   if (state.injected) return;
 
   commit('changeInjectStatus', true);
-
-  connect.injectWeb3(dappWindow);
-
-  dispatch('sendSettings');
+  await dispatch('sendSettings');
+  await connect.injectWeb3(dappWindow);
 };
 
-// const reset = ({ commit }) => {
-//   commit(CHANGE_INJECT_STATUS, false);
-// };
+const reset = ({ commit }) => {
+  commit('changeInjectStatus', false);
+  commit('changeLoadStatus', false);
+};
 
-const sendSettings = ({ state, rootGetters }) => {
+const sendSettings = ({ state }) => {
   const { accountData } = state;
 
   if (accountData) {
@@ -26,13 +25,8 @@ const sendSettings = ({ state, rootGetters }) => {
 };
 
 const auth = async ({ dispatch }) => {
-  const res = await connect.auth();
-
-  if (res.status) {
-    return await dispatch('getAccountData');
-  }
-
-  return null;
+  await connect.auth();
+  await dispatch('getAccountData');
 };
 
 const getAccountData = async ({ commit }) => {
@@ -50,5 +44,5 @@ export default {
   getAccountData,
   inject,
   sendSettings,
-  // reset,
+  reset,
 };

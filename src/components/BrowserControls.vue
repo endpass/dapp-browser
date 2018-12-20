@@ -1,11 +1,9 @@
 <template>
   <div class="browser-controls">
-    <div v-if="address"
-class="browser-controls__avatar">
+    <div v-if="address" class="browser-controls__avatar">
       <Identicon :address="address" />
     </div>
-    <form class="browser-controls__form"
-@submit.prevent="emitSubmit">
+    <form class="browser-controls__form" @submit.prevent="emitSubmit">
       <div class="browser-controls__input">
         <VInput
           :value="value"
@@ -25,8 +23,7 @@ class="browser-controls__avatar">
         </VButton>
       </div>
     </form>
-    <Message
-v-if="error" :danger="true"> {{ error }} </Message>
+    <Message v-if="error" :danger="true"> {{ error }} </Message>
   </div>
 </template>
 

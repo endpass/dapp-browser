@@ -1,11 +1,10 @@
 <template>
   <div class="browser">
-    <section v-if="inited"
-class="browser__controls">
+    <section v-if="inited" class="browser__controls">
       <BrowserControls
         v-model="url"
         :loading="loading"
-        :address="accountData.activeAccount"
+        :address="activeAccount"
         :error="error"
         @submit="handleControlsSubmit"
         @auth="handleAuthRequest"
@@ -46,6 +45,10 @@ export default {
       loaded: state => state.dapp.loaded,
     }),
 
+    activeAccount() {
+      return get(this.accountData, 'activeAccount');
+    },
+
     dappUrl() {
       return `/${this.url}`;
     },
@@ -58,8 +61,8 @@ export default {
   },
 
   methods: {
-    ...mapMutations(['changeLoadStatus', 'changeLoadingStatus']),
-    ...mapActions(['auth', 'getAccountData', 'inject']),
+    ...mapMutations(['changeLoadingStatus', 'changeLoadStatus']),
+    ...mapActions(['auth', 'getAccountData', 'inject', 'reset']),
 
     handleControlsSubmit() {
       this.changeLoadingStatus(true);
@@ -79,7 +82,7 @@ export default {
 
     handleUrlChange() {
       if (this.loaded) {
-        this.changeLoadStatus(false);
+        this.reset();
       }
     },
 

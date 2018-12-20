@@ -9,14 +9,15 @@
     "_build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:e2e": "vue-cli-service test:e2e",
-    "test:unit": "vue-cli-service test:unit"
+    "test:unit": "vue-cli-service test:unit",
+    "format": "prettier --write 'src/*.{js,vue,json}' && eslint src/*.{js,vue} --fix"
   },
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "*.js": ["git add"],
-    "*.vue": ["git add"]
+    "src/*.{js,vue,json}": ["prettier --write", "git add"],
+    "tests/*.js": ["prettier --write", "git add"]
   },
   "dependencies": {
     "ethereum-blockies-base64": "^1.0.2",
