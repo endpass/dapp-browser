@@ -84,7 +84,6 @@ const config = {
     contentBase: DIST_PATH,
     hot: true,
     historyApiFallback: true,
-    // host: 'local.endpass-browser.com',
     proxy: {
       '/http': {
         target: 'http://localhost:8080',

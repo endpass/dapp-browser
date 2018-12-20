@@ -1,4 +1,4 @@
-import EndpassConnect from 'endpass-connect';
+import EndpassConnect from '@endpass/connect';
 
 const connect = new EndpassConnect({
   appUrl: ENV.connect.url,

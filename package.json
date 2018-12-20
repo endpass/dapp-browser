@@ -16,10 +16,17 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "src/*.{js,vue,json}": ["prettier --write", "git add"],
-    "tests/*.js": ["prettier --write", "git add"]
+    "src/*.{js,vue,json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "tests/*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "dependencies": {
+    "@endpass/connect": "^0.2.2-alpha",
     "ethereum-blockies-base64": "^1.0.2",
     "lodash": "^4.17.11",
     "reset.css": "^2.0.2",

@@ -2,10 +2,10 @@ const infura = {
   key: 'zU4GTAQ0LjJNKddbyztc',
 };
 const proxy = {
-  url: 'http://localhost:8080',
+  url: 'https://wildproxy-dev.endpass.net',
 };
 const connect = {
-  url: 'http://localhost:5000',
+  url: 'http://auth-dev.endpass.com',
 };
 
 module.exports = {
