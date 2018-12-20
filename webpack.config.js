@@ -4,58 +4,58 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-// const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { getEnv } = require('./env');
 
 /**
  * Paths
  */
-const ENV = process.env.NODE_ENV || 'development';
+const { NODE_ENV = 'development' } = process.env;
+const ENV = getEnv(NODE_ENV);
 const PORT = process.env.PORT || 8080;
 const SOURCE_PATH = path.resolve(__dirname, './src');
 const PUBLIC_PATH = path.resolve(__dirname, './public');
 const DIST_PATH = path.resolve(__dirname, './dist');
 
-console.log(SOURCE_PATH);
-
 /**
  * Base configuration
  */
 const config = {
-  mode: ENV,
+  mode: NODE_ENV,
 
   entry: path.join(SOURCE_PATH, 'main.js'),
 
   output: {
     path: DIST_PATH,
     publicPath: '/',
-    filename: ENV === 'development' ? 'js/[name].js' : 'js/[name].js?[hash:16]',
+    filename:
+      NODE_ENV === 'development' ? 'js/[name].js' : 'js/[name].js?[hash:16]',
   },
 
-  watch: ENV === 'development',
+  watch: NODE_ENV === 'development',
 
   watchOptions: {
     aggregateTimeout: 100,
   },
 
-  devtool: ENV === 'development' && 'cheap-module-eval-source-map',
+  devtool: NODE_ENV === 'development' && 'cheap-module-eval-source-map',
 
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NodeEnvironmentPlugin('NODE_ENV'),
+    new webpack.NodeEnvironmentPlugin('NODE_NODE_ENV'),
     new SimpleProgressWebpackPlugin({
-      format: ENV === 'development' ? 'minimal' : 'compact',
+      format: NODE_ENV === 'development' ? 'minimal' : 'compact',
     }),
     new ExtractTextPlugin(
-      ENV === 'development' ? 'main.css' : 'main.css?[hash:16]',
+      NODE_ENV === 'development' ? 'main.css' : 'main.css?[hash:16]',
     ),
     new HtmlWebpackPlugin({
       template: path.resolve(PUBLIC_PATH, './index.html'),
     }),
     new webpack.DefinePlugin({
-      NODE_ENV: JSON.stringify(ENV),
+      NODE_ENV: JSON.stringify(NODE_ENV),
+      ENV: JSON.stringify(ENV),
     }),
-    // new VueLoaderPlugin(),
   ],
 
   resolve: {
@@ -84,7 +84,7 @@ const config = {
     contentBase: DIST_PATH,
     hot: true,
     historyApiFallback: true,
-    open: true,
+    // host: 'local.endpass-browser.com',
     proxy: {
       '/http': {
         target: 'http://localhost:8080',
@@ -122,7 +122,7 @@ const config = {
   },
 };
 
-if (ENV === 'development') {
+if (NODE_ENV === 'development') {
   config.plugins.push(
     new BundleAnalyzerPlugin({
       openAnalyzer: false,

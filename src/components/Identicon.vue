@@ -1,6 +1,5 @@
 <template>
-  <img
-class="identicon" :src="image" />
+  <img class="identicon" :src="image" :alt="address" />
 </template>
 
 <script>
