@@ -20,18 +20,14 @@ const DIST_PATH = path.resolve(__dirname, './dist');
  * Base configuration
  */
 const config = {
-  mode: NODE_ENV,
-
   entry: path.join(SOURCE_PATH, 'main.js'),
 
   output: {
     path: DIST_PATH,
     publicPath: '/',
     filename:
-      NODE_ENV === 'development' ? 'js/[name].js' : 'js/[name].js?[hash:16]',
+      NODE_ENV === 'development' ? 'js/[name].js' : 'js/[name].[hash:16].js',
   },
-
-  watch: NODE_ENV === 'development',
 
   watchOptions: {
     aggregateTimeout: 100,
@@ -40,14 +36,13 @@ const config = {
   devtool: NODE_ENV === 'development' && 'cheap-module-eval-source-map',
 
   plugins: [
-    new webpack.NoEmitOnErrorsPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NodeEnvironmentPlugin('NODE_NODE_ENV'),
     new SimpleProgressWebpackPlugin({
       format: NODE_ENV === 'development' ? 'minimal' : 'compact',
     }),
     new ExtractTextPlugin(
-      NODE_ENV === 'development' ? 'main.css' : 'main.css?[hash:16]',
+      NODE_ENV === 'development' ? 'main.css' : 'main.[hash:16].css',
     ),
     new HtmlWebpackPlugin({
       template: path.resolve(PUBLIC_PATH, './index.html'),
@@ -63,19 +58,6 @@ const config = {
     extensions: ['.js', '.vue', '.css'],
     alias: {
       '@': SOURCE_PATH,
-    },
-  },
-
-  optimization: {
-    splitChunks: {
-      chunks: 'all',
-      minChunks: 1,
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          priority: -10,
-        },
-      },
     },
   },
 
