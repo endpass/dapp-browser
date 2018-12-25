@@ -7,6 +7,7 @@
         :address="activeAccount"
         :error="error"
         @submit="handleControlsSubmit"
+        @logout="handleControlsLogout"
         @auth="handleAuthRequest"
         @reset="handleControlsReset"
       />
@@ -62,10 +63,14 @@ export default {
 
   methods: {
     ...mapMutations(['changeLoadingStatus', 'changeLoadStatus']),
-    ...mapActions(['auth', 'getAccountData', 'inject', 'reset']),
+    ...mapActions(['auth', 'logout', 'getAccountData', 'inject', 'reset']),
 
     handleControlsSubmit() {
       this.changeLoadingStatus(true);
+    },
+
+    handleControlsLogout() {
+      this.logout();
     },
 
     handleControlsReset() {

@@ -29,6 +29,12 @@ const auth = async ({ dispatch }) => {
   await dispatch('getAccountData');
 };
 
+const logout = async ({ dispatch, commit }) => {
+  await connect.logout();
+  await dispatch('reset');
+  commit('setAccountData', null);
+};
+
 const getAccountData = async ({ commit }) => {
   try {
     const res = await connect.getAccountData();
@@ -45,4 +51,5 @@ export default {
   inject,
   sendSettings,
   reset,
+  logout,
 };

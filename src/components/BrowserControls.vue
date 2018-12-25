@@ -21,6 +21,7 @@
         >
           {{ buttonLabel }}
         </VButton>
+        <VButton v-if="authorized" @click="emitLogout"> Log out </VButton>
       </div>
     </form>
     <Message v-if="error" :danger="true"> {{ error }} </Message>
@@ -86,6 +87,10 @@ export default {
   methods: {
     emitSubmit() {
       this.$emit('submit');
+    },
+
+    emitLogout() {
+      this.$emit('logout');
     },
 
     emitInput(value) {
