@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development webpack-dev-server --mode=development --watch",
-    "build": "npx rimraf ./dist && NODE_ENV=production webpack --mode=production",
-    "build:dev": "npx rimraf ./dist && NODE_ENV=development webpack --mode=production",
-    "build:test": "npx rimraf ./dist && NODE_ENV=test webpack --mode=production",
+    "build": "rimraf ./dist && NODE_ENV=production webpack --mode=production",
+    "build:dev": "rimraf ./dist && NODE_ENV=development webpack --mode=production",
+    "build:test": "rimraf ./dist && NODE_ENV=test webpack --mode=production",
     "_dev": "vue-cli-service serve",
     "_build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
@@ -18,11 +18,17 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "src/*.{js,vue,json}": ["prettier --write", "git add"],
-    "tests/*.js": ["prettier --write", "git add"]
+    "src/*.{js,vue,json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "tests/*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "dependencies": {
-    "@endpass/connect": "^0.2.2-alpha",
+    "@endpass/connect": "^0.4.0-alpha",
     "ethereum-blockies-base64": "^1.0.2",
     "lodash": "^4.17.11",
     "reset.css": "^2.0.2",

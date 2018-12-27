@@ -9,7 +9,7 @@ const { getEnv } = require('./env');
 /**
  * Paths
  */
-const { NODE_ENV = 'development' } = process.env;
+const { NODE_ENV = 'development', WEBPACK_MODE } = process.env;
 const ENV = getEnv(NODE_ENV);
 const PORT = process.env.PORT || 8080;
 const SOURCE_PATH = path.resolve(__dirname, './src');
@@ -26,29 +26,29 @@ const config = {
     path: DIST_PATH,
     publicPath: '/',
     filename:
-      NODE_ENV === 'development' ? 'js/[name].js' : 'js/[name].[hash:16].js',
+      WEBPACK_MODE === 'development'
+        ? 'js/[name].js'
+        : 'js/[name].[hash:16].js',
   },
 
   watchOptions: {
     aggregateTimeout: 100,
   },
 
-  devtool: NODE_ENV === 'development' && 'cheap-module-eval-source-map',
+  devtool: WEBPACK_MODE === 'development' && 'cheap-module-eval-source-map',
 
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NodeEnvironmentPlugin('NODE_NODE_ENV'),
     new SimpleProgressWebpackPlugin({
-      format: NODE_ENV === 'development' ? 'minimal' : 'compact',
+      format: WEBPACK_MODE === 'development' ? 'minimal' : 'compact',
     }),
     new ExtractTextPlugin(
-      NODE_ENV === 'development' ? 'main.css' : 'main.[hash:16].css',
+      WEBPACK_MODE === 'development' ? 'main.css' : 'main.[hash:16].css',
     ),
     new HtmlWebpackPlugin({
       template: path.resolve(PUBLIC_PATH, './index.html'),
     }),
     new webpack.DefinePlugin({
-      NODE_ENV: JSON.stringify(NODE_ENV),
       ENV: JSON.stringify(ENV),
     }),
   ],
@@ -103,7 +103,7 @@ const config = {
   },
 };
 
-if (NODE_ENV === 'development') {
+if (WEBPACK_MODE === 'development') {
   config.plugins.push(
     new BundleAnalyzerPlugin({
       openAnalyzer: false,
