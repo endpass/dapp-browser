@@ -5,7 +5,7 @@ const proxy = {
   url: 'https://wildproxy-dev.endpass.net',
 };
 const connect = {
-  url: 'http://auth-dev.endpass.com',
+  url: 'https://auth-dev.endpass.com',
 };
 
 module.exports = {

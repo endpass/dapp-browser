@@ -5,7 +5,7 @@ const inject = async ({ state, commit, dispatch }, dappWindow) => {
 
   commit('changeInjectStatus', true);
   await dispatch('sendSettings');
-  await connect.injectWeb3(dappWindow);
+  connect.injectWeb3(dappWindow);
 };
 
 const reset = ({ commit }) => {
@@ -25,14 +25,22 @@ const sendSettings = ({ state }) => {
 };
 
 const auth = async ({ dispatch }) => {
-  await connect.auth();
-  await dispatch('getAccountData');
+  try {
+    await connect.auth(window.location.href);
+    await dispatch('getAccountData');
+  } catch (err) {
+    console.error(`Auth failed: ${err}`);
+  }
 };
 
 const logout = async ({ dispatch, commit }) => {
-  await connect.logout();
-  await dispatch('reset');
-  commit('setAccountData', null);
+  try {
+    await connect.logout();
+    await dispatch('reset');
+    commit('setAccountData', null);
+  } catch (err) {
+    console.error(`Logout failed: ${err}`);
+  }
 };
 
 const getAccountData = async ({ commit }) => {
