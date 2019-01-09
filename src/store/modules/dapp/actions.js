@@ -26,7 +26,7 @@ const sendSettings = ({ state }) => {
 
 const auth = async ({ dispatch }) => {
   try {
-    await connect.auth(window.location.href);
+    await connect.auth(window.location.origin);
     await dispatch('getAccountData');
   } catch (err) {
     console.error(`Auth failed: ${err}`);
