@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NODE_ENV=development webpack-dev-server --mode=development --watch",
+    "dev": "NODE_ENV=local webpack-dev-server --mode=development --watch",
     "build": "rimraf ./dist && NODE_ENV=production webpack --mode=production",
     "build:dev": "rimraf ./dist && NODE_ENV=development webpack --mode=production",
     "build:test": "rimraf ./dist && NODE_ENV=test webpack --mode=production",
@@ -18,14 +18,8 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "src/*.{js,vue,json}": [
-      "prettier --write",
-      "git add"
-    ],
-    "tests/*.js": [
-      "prettier --write",
-      "git add"
-    ]
+    "src/*.{js,vue,json}": ["prettier --write", "git add"],
+    "tests/*.js": ["prettier --write", "git add"]
   },
   "dependencies": {
     "@endpass/connect": "^0.4.0-alpha",
