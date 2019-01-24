@@ -1,29 +1,34 @@
 <template>
-  <div class="browser-controls">
-    <div v-if="address" class="browser-controls__avatar">
-      <Identicon :address="address" />
+  <div>
+    <div class="browser-controls">
+      <div v-if="address" class="browser-controls__avatar">
+        <Identicon :address="address" />
+      </div>
+      <form class="browser-controls__form" @submit.prevent="emitSubmit">
+        <div class="browser-controls__input">
+          <VInput
+            :value="value"
+            :disabled="!authorized || loading"
+            placeholder="Enter dapp url..."
+            @input="emitInput"
+          />
+        </div>
+        <div class="browser-controls__button">
+          <VButton
+            :disabled="isButtonDisabled"
+            type="primary"
+            :submit="authorized"
+            @click="emitAuth"
+          >
+            {{ buttonLabel }}
+          </VButton>
+          <VButton v-if="authorized" @click="emitLogout"> Log out </VButton>
+        </div>
+      </form>
     </div>
-    <form class="browser-controls__form" @submit.prevent="emitSubmit">
-      <div class="browser-controls__input">
-        <VInput
-          :value="value"
-          :disabled="!authorized || loading"
-          placeholder="Enter dapp url..."
-          @input="emitInput"
-        />
-      </div>
-      <div class="browser-controls__button">
-        <VButton
-          :disabled="isButtonDisabled"
-          type="primary"
-          :submit="authorized"
-          @click="emitAuth"
-        >
-          {{ buttonLabel }}
-        </VButton>
-        <VButton v-if="authorized" @click="emitLogout"> Log out </VButton>
-      </div>
-    </form>
+    <div class="links">
+      <DappLink v-for="dapp in dapps" :key="dapp.url" @click="goTo(dapp.url)" :url="dapp.url" :name="dapp.name" :title="dapp.title" :icon="dapp.icon"></DappLink>
+    </div>
     <Message v-if="error" :danger="true"> {{ error }} </Message>
   </div>
 </template>
@@ -31,8 +36,10 @@
 <script>
 import VButton from './VButton.vue';
 import VInput from './VInput.vue';
+import DappLink from './DappLink.vue';
 import Message from './Message.vue';
 import Identicon from './Identicon.vue';
+import dapps from '@/constants/dapp-links.js'
 
 export default {
   name: 'BrowserControls',
@@ -57,6 +64,12 @@ export default {
       type: String,
       default: null,
     },
+  },
+
+  data() {
+    return {
+      dapps
+    }
   },
 
   computed: {
@@ -89,6 +102,11 @@ export default {
       this.$emit('submit');
     },
 
+    goTo(url) {
+      this.$emit('input', url);
+      this.$emit('submit');
+    },
+
     emitLogout() {
       this.$emit('logout');
     },
@@ -108,6 +126,7 @@ export default {
     VButton,
     VInput,
     Identicon,
+    DappLink,
     Message,
   },
 };
@@ -137,5 +156,10 @@ export default {
 
 .browser-controls__button {
   flex: 0 0 auto;
+}
+.links{
+    display: flex;
+    align-items: left;
+    padding: 5px 16px;
 }
 </style>
