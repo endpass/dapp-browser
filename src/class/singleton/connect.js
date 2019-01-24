@@ -1,8 +1,7 @@
 import EndpassConnect from '@endpass/connect';
 
 const connect = new EndpassConnect({
-  appUrl: ENV.connect.url,
-  subscribe: true,
+  authUrl: ENV.connect.url,
 });
 
 export default connect;
