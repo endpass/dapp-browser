@@ -1,9 +1,4 @@
-import { ProviderFactory } from '@/class/provider';
-import Web3Factory from '@/class/Web3Factory';
+import Web3 from 'web3';
 import { DEFAULT_NETWORKS } from '@/constants';
 
-const defaultProvider = ProviderFactory.create(DEFAULT_NETWORKS[0].url);
-
-const web3 = Web3Factory.create(defaultProvider);
-
-export default web3;
+export default new Web3(DEFAULT_NETWORKS[1].url);

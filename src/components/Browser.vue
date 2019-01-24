@@ -166,10 +166,10 @@ export default {
 
 .browser__viewer {
   position: absolute;
-  top: 70px;
+  top: 105px;
   left: 0;
   width: 100%;
-  height: calc(100% - 70px);
+  height: calc(100% - 105px);
 }
 
 @media (max-width: 768px) {
