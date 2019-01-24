@@ -1,11 +1,21 @@
-import { connect } from '@/class/singleton';
+import { connect, web3 } from '@/class/singleton';
+
+const initProvider = () => {
+  const provider = connect.createProvider(web3);
+
+  web3.setProvider(provider);
+};
 
 const inject = async ({ state, commit, dispatch }, dappWindow) => {
   if (state.injected) return;
 
   commit('changeInjectStatus', true);
   await dispatch('sendSettings');
-  connect.injectWeb3(dappWindow);
+
+  Object.assign(dappWindow, {
+    ethereum: web3.currentProvider,
+    web3,
+  });
 };
 
 const reset = ({ commit }) => {
@@ -54,6 +64,7 @@ const getAccountData = async ({ commit }) => {
 };
 
 export default {
+  initProvider,
   auth,
   getAccountData,
   inject,

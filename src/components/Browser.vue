@@ -63,7 +63,14 @@ export default {
 
   methods: {
     ...mapMutations(['changeLoadingStatus', 'changeLoadStatus']),
-    ...mapActions(['auth', 'logout', 'getAccountData', 'inject', 'reset']),
+    ...mapActions([
+      'auth',
+      'logout',
+      'getAccountData',
+      'inject',
+      'reset',
+      'initProvider',
+    ]),
 
     handleControlsSubmit() {
       this.changeLoadingStatus(true);
@@ -99,7 +106,6 @@ export default {
         this.changeLoadStatus(true);
         this.inject(viewer.contentWindow);
       } catch (err) {
-        console.log(err);
         this.error =
           'Page is not loaded. Try load other page or reload current.';
       } finally {
@@ -109,6 +115,7 @@ export default {
   },
 
   async created() {
+    this.initProvider();
     await this.getAccountData();
 
     this.inited = true;
@@ -163,5 +170,16 @@ export default {
   left: 0;
   width: 100%;
   height: calc(100% - 70px);
+}
+
+@media (max-width: 768px) {
+  .browser__controls {
+    position: static;
+  }
+
+  .browser__viewer {
+    top: 0;
+    height: 100%;
+  }
 }
 </style>

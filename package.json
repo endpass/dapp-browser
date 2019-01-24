@@ -18,18 +18,24 @@
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
-    "src/*.{js,vue,json}": ["prettier --write", "git add"],
-    "tests/*.js": ["prettier --write", "git add"]
+    "src/*.{js,vue,json}": [
+      "prettier --write",
+      "git add"
+    ],
+    "tests/*.js": [
+      "prettier --write",
+      "git add"
+    ]
   },
   "dependencies": {
-    "@endpass/connect": "^0.4.0-alpha",
+    "@endpass/connect": "^0.7.0-alpha",
     "ethereum-blockies-base64": "^1.0.2",
     "lodash": "^4.17.11",
     "reset.css": "^2.0.2",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
-    "web3": "^1.0.0-beta.36"
+    "web3": "^1.0.0-beta.37"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",
