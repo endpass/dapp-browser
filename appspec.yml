@@ -3,9 +3,9 @@ version: 0.0
 os: linux
 files:
    - source: /
-     destination: /var/www/browser-new
+     destination: /var/www/browser
 permissions:
-   - object: /var/www/browser-new
+   - object: /var/www/browser
      pattern: "**"
      owner: root
      group: root
