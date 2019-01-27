@@ -1,5 +1,4 @@
 version: 0.0
-
 os: linux
 files:
    - source: /
@@ -10,3 +9,12 @@ permissions:
      owner: root
      group: root
      mode: 644
+     type:
+       - file
+   - object: /var/www/browser
+     pattern: "*js*"
+     owner: root
+     group: root
+     mode: 755
+     type:
+       - directory
