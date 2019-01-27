@@ -24,8 +24,8 @@ deploy:
   on:
     branch: master
 - provider: codedeploy
-  access_key_id: "$AWS_ACCESS_KEY"
-  secret_access_key: "$AWS_SECRET_KEY"
+  access_key_id: "$ACCESS_KEY_ID"
+  secret_access_key: "$SECRET_ACCESS_KEY"
   bucket: endpass-dev-apps
   region: us-east-1
   key: browser/latest.zip
