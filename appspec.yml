@@ -1,0 +1,12 @@
+version: 0.0
+
+os: linux
+files:
+   - source: /
+     destination: /var/www/browser-new
+permissions:
+   - object: /var/www/browser-new
+     pattern: "**"
+     owner: root
+     group: root
+     mode: 644
