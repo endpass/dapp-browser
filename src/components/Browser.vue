@@ -7,7 +7,7 @@
         :address="activeAccount"
         :error="error"
         @submit="handleControlsSubmit"
-        @logout="handleControlsLogout"
+        @account="handleOpenAccount"
         @auth="handleAuthRequest"
         @reset="handleControlsReset"
       />
@@ -69,7 +69,8 @@ export default {
       'getAccountData',
       'inject',
       'reset',
-      'initProvider',
+      'init',
+      'openAccount',
     ]),
 
     handleControlsSubmit() {
@@ -78,6 +79,10 @@ export default {
 
     handleControlsLogout() {
       this.logout();
+    },
+
+    handleOpenAccount() {
+      this.openAccount();
     },
 
     handleControlsReset() {
@@ -115,7 +120,7 @@ export default {
   },
 
   async created() {
-    this.initProvider();
+    this.init();
     await this.getAccountData();
 
     this.inited = true;

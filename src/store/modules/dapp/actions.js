@@ -1,6 +1,8 @@
 import { connect, web3 } from '@/class/singleton';
 
-const initProvider = () => {
+console.log(web3);
+
+const init = () => {
   const provider = connect.createProvider(web3);
 
   web3.setProvider(provider);
@@ -10,7 +12,7 @@ const inject = async ({ state, commit, dispatch }, dappWindow) => {
   if (state.injected) return;
 
   commit('changeInjectStatus', true);
-  await dispatch('sendSettings');
+  await dispatch('setProviderSettings');
 
   Object.assign(dappWindow, {
     ethereum: web3.currentProvider,
@@ -23,14 +25,11 @@ const reset = ({ commit }) => {
   commit('changeLoadStatus', false);
 };
 
-const sendSettings = ({ state }) => {
+const setProviderSettings = ({ state }) => {
   const { accountData } = state;
 
   if (accountData) {
-    connect.sendSettings({
-      selectedAddress: accountData.activeAccount,
-      networkVersion: accountData.activeNet,
-    });
+    connect.setProviderSettings(accountData);
   }
 };
 
@@ -63,12 +62,26 @@ const getAccountData = async ({ commit }) => {
   }
 };
 
+const openAccount = async ({ commit, dispatch }) => {
+  const { type, payload } = await connect.openAccount();
+
+  if (type === 'logout') {
+    commit('setAccountData', null);
+    await dispatch('reset');
+  } else if (type === 'update') {
+    commit('setAccountData', payload);
+    await dispatch('setProviderSettings');
+    await dispatch('reset');
+  }
+};
+
 export default {
-  initProvider,
+  init,
   auth,
   getAccountData,
   inject,
-  sendSettings,
+  setProviderSettings,
   reset,
   logout,
+  openAccount,
 };
