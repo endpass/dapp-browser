@@ -1,9 +1,7 @@
 import { connect, web3 } from '@/class/singleton';
 
-console.log(web3);
-
 const init = () => {
-  const provider = connect.createProvider(web3);
+  const provider = connect.extendProvider(web3.providers.HttpProvider);
 
   web3.setProvider(provider);
 };
