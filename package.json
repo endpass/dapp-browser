@@ -28,7 +28,7 @@
     ]
   },
   "dependencies": {
-    "@endpass/connect": "^0.10.2-alpha",
+    "@endpass/connect": "^0.12.4-beta",
     "ethereum-blockies-base64": "^1.0.2",
     "lodash": "^4.17.11",
     "reset.css": "^2.0.2",
