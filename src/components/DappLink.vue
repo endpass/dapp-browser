@@ -6,7 +6,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'DappLink',
 
@@ -27,14 +26,14 @@ export default {
   methods: {
     emitClick() {
       this.$emit('click');
-    }
-  }
-
+    },
+  },
 };
 </script>
 
 <style lang="postcss">
   .dapp-link {
+    padding: 5px;
     background: transparent;
     display: flex;
     border: none;
