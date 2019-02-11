@@ -196,8 +196,9 @@ export default {
 
 .browser-controls__links {
   display: flex;
-  align-items: left;
-  padding: 5px 16px 12px;
+  flex-flow: row wrap;
+  align-items: center;
+  padding: 11px 9px;
 }
 
 @media (max-width: 768px) {
