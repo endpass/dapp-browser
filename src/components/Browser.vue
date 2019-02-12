@@ -6,27 +6,25 @@
         :loading="loading"
         :address="activeAccount"
         :error="error"
-        @submit="handleControlsSubmit"
+        @submit="handleSubmitUrl"
         @account="handleOpenAccount"
         @auth="handleAuthRequest"
-        @reset="handleControlsReset"
       />
     </section>
     <section class="browser__frame">
       <iframe
-        v-if="loading || loaded"
-        v-show="loaded"
+        v-if="isShowDapp"
         ref="viewer"
         class="browser__viewer"
         :src="dappUrl"
-        @load="handleViewerLoad"
+        @load="onViewerLoad"
       />
     </section>
   </div>
 </template>
 
 <script>
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import BrowserControls from '@/components/BrowserControls';
 
@@ -35,6 +33,7 @@ export default {
 
   data: () => ({
     url: '',
+    dappUrl: '',
     inited: false,
     error: null,
   }),
@@ -50,14 +49,8 @@ export default {
       return get(this.accountData, 'activeAccount');
     },
 
-    dappUrl() {
-      return `/${this.url}`;
-    },
-  },
-
-  watch: {
-    url() {
-      this.handleUrlChange();
+    isShowDapp() {
+      return !!this.dappUrl;
     },
   },
 
@@ -65,7 +58,6 @@ export default {
     ...mapMutations(['changeLoadingStatus', 'changeLoadStatus']),
     ...mapActions([
       'auth',
-      'logout',
       'getAccountData',
       'inject',
       'reset',
@@ -73,20 +65,21 @@ export default {
       'openAccount',
     ]),
 
-    handleControlsSubmit() {
-      this.changeLoadingStatus(true);
+    changeRoutePath(url = '') {
+      this.$router.replace(`?url=${url}`);
     },
 
-    handleControlsLogout() {
-      this.logout();
+    handleSubmitUrl() {
+      this.handleUrlChange();
+
+      this.dappUrl = `/${this.url}`;
+      this.changeRoutePath(this.url);
+
+      this.changeLoadingStatus(true);
     },
 
     handleOpenAccount() {
       this.openAccount();
-    },
-
-    handleControlsReset() {
-      this.url = '';
     },
 
     async handleAuthRequest() {
@@ -103,7 +96,7 @@ export default {
       }
     },
 
-    handleViewerLoad() {
+    onViewerLoad() {
       try {
         const { viewer } = this.$refs;
         get(viewer.contentWindow, 'location');
@@ -114,7 +107,15 @@ export default {
         this.error =
           'Page is not loaded. Try load other page or reload current.';
       } finally {
-        this.changeLoadingStatus(false);
+        //this.changeLoadingStatus(false);
+      }
+    },
+
+    loadByPathQuery() {
+      const url = this.$route.query.url;
+      if (url) {
+        this.url = url;
+        this.handleSubmitUrl();
       }
     },
   },
@@ -122,6 +123,8 @@ export default {
   async created() {
     this.init();
     await this.getAccountData();
+
+    this.loadByPathQuery();
 
     this.inited = true;
   },

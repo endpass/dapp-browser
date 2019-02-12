@@ -13,25 +13,21 @@
         <div class="browser-controls__input">
           <VInput
             :value="value"
-            :disabled="!authorized || loading"
             placeholder="Enter dapp url..."
             @input="emitInput"
           />
         </div>
       </div>
       <div class="browser-controls__button">
-        <VButton
-          :disabled="isButtonDisabled"
-          type="primary"
-          :submit="authorized"
-          @click="emitAuth"
-        >
+        <VButton type="primary" @click="emitSubmit">
           {{ buttonLabel }}
         </VButton>
       </div>
-      <Message v-if="error" :danger="true"> {{ error }} </Message>
+      <Message v-if="error" :danger="true">
+        {{ error }}
+      </Message>
     </form>
-    <div v-if="authorized" class="browser-controls__links">
+    <div class="browser-controls__links">
       <DappLink
         v-for="dapp in dapps"
         :key="dapp.url"
@@ -39,8 +35,8 @@
         :name="dapp.name"
         :title="dapp.title"
         :icon="dapp.icon"
-        @click="goTo(dapp.url)"
-      ></DappLink>
+        @click="onSelectExample(dapp.url)"
+      />
     </div>
   </div>
 </template>
@@ -89,50 +85,26 @@ export default {
       return !!this.address;
     },
 
-    isButtonDisabled() {
-      const { authorized, loading, value } = this;
-
-      if (!authorized) return false;
-
-      return loading || !value;
-    },
-
     buttonLabel() {
       if (this.loading) {
         return 'Loading...';
       }
-      if (this.authorized) {
-        return 'Open';
-      }
-
-      return 'Sign in';
+      return 'Open';
     },
   },
 
   methods: {
+    onSelectExample(url) {
+      this.emitInput(url);
+      this.emitSubmit();
+    },
+
     emitSubmit() {
       this.$emit('submit');
     },
 
-    goTo(url) {
-      if (!this.loading) {
-        this.$emit('input', url);
-        this.$emit('submit');
-      }
-    },
-
-    emitLogout() {
-      this.$emit('logout');
-    },
-
     emitInput(value) {
       this.$emit('input', value);
-    },
-
-    emitAuth() {
-      if (!this.authorized) {
-        this.$emit('auth');
-      }
     },
 
     emitAccount() {

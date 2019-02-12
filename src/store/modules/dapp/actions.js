@@ -33,7 +33,7 @@ const setProviderSettings = ({ state }) => {
 
 const auth = async ({ dispatch }) => {
   try {
-    await connect.auth(window.location.origin);
+    await connect.auth(window.location.toString());
     await dispatch('getAccountData');
   } catch (err) {
     console.error(`Auth failed: ${err}`);
