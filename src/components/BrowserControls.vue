@@ -11,6 +11,10 @@
             v-if="authorized"
             :address="address"
           />
+          <v-svg-icon
+            v-else
+            name="account-login"
+          />
         </button>
         <div class="browser-controls__input">
           <VInput
@@ -50,6 +54,7 @@ import VInput from './VInput.vue';
 import DappLink from './DappLink.vue';
 import Message from './Message.vue';
 import Identicon from './Identicon.vue';
+import VSvgIcon from './VSvgIcon';
 
 export default {
   name: 'BrowserControls',
@@ -120,6 +125,7 @@ export default {
     Identicon,
     DappLink,
     Message,
+    VSvgIcon,
   },
 };
 </script>
