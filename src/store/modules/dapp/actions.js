@@ -1,4 +1,5 @@
 import { connect, web3 } from '@/class/singleton';
+import { LOAD_STATE } from '@/constants';
 
 const init = () => {
   const provider = connect.extendProvider(web3.providers.HttpProvider);
@@ -18,9 +19,14 @@ const inject = async ({ state, commit, dispatch }, dappWindow) => {
   });
 };
 
-const reset = ({ commit }) => {
+const toInitial = ({ commit }) => {
   commit('changeInjectStatus', false);
-  commit('changeLoadStatus', false);
+  commit('changeLoadingStatus', LOAD_STATE.INITIAL);
+};
+
+const beforeInject = ({ commit }) => {
+  commit('changeInjectStatus', false);
+  commit('changeLoadingStatus', LOAD_STATE.LOADING);
 };
 
 const setProviderSettings = ({ state }) => {
@@ -43,7 +49,7 @@ const auth = async ({ dispatch }) => {
 const logout = async ({ dispatch, commit }) => {
   try {
     await connect.logout();
-    await dispatch('reset');
+    await dispatch('toInitial');
     commit('setAccountData', null);
   } catch (err) {
     console.error(`Logout failed: ${err}`);
@@ -65,11 +71,11 @@ const openAccount = async ({ commit, dispatch }) => {
 
   if (type === 'logout') {
     commit('setAccountData', null);
-    await dispatch('reset');
+    await dispatch('toInitial');
   } else if (type === 'update') {
     commit('setAccountData', payload);
     await dispatch('setProviderSettings');
-    await dispatch('reset');
+    await dispatch('toInitial');
   }
 };
 
@@ -77,9 +83,10 @@ export default {
   init,
   auth,
   getAccountData,
+  beforeInject,
   inject,
   setProviderSettings,
-  reset,
+  toInitial,
   logout,
   openAccount,
 };

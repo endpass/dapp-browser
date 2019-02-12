@@ -1,6 +1,12 @@
 /**
  * Networks map
  */
+export const LOAD_STATE = Object.freeze({
+  INITIAL: 'INITIAL',
+  LOADING: 'LOADING',
+  LOADED: 'LOADED',
+});
+
 export const NETWORK_URL = Object.freeze({
   ETH: [
     // 'wss://eth-mainnet.endpass.com:2084',

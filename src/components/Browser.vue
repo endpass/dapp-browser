@@ -3,7 +3,7 @@
     <section v-if="inited" class="browser__controls">
       <BrowserControls
         v-model="url"
-        :loading="loading"
+        :isLoading="isLoading"
         :address="activeAccount"
         :error="error"
         @submit="handleSubmitUrl"
@@ -13,10 +13,11 @@
     </section>
     <section class="browser__frame">
       <iframe
-        v-if="isShowDapp"
+        v-if="isVisibleViewer"
+        v-show="!isLoading"
         ref="viewer"
         class="browser__viewer"
-        :src="dappUrl"
+        :src="viewerUrl"
         @load="onViewerLoad"
       />
     </section>
@@ -27,13 +28,15 @@
 import get from 'lodash/get';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import BrowserControls from '@/components/BrowserControls';
+import { LOAD_STATE } from '@/constants';
 
 export default {
   name: 'Browser',
 
   data: () => ({
     url: '',
-    dappUrl: '',
+    activeUrl: '',
+    viewerUrl: '',
     inited: false,
     error: null,
   }),
@@ -41,26 +44,26 @@ export default {
   computed: {
     ...mapState({
       accountData: state => state.dapp.accountData,
-      loading: state => state.dapp.loading,
-      loaded: state => state.dapp.loaded,
+      isLoading: state => state.dapp.loadState === LOAD_STATE.LOADING,
     }),
 
     activeAccount() {
       return get(this.accountData, 'activeAccount');
     },
 
-    isShowDapp() {
-      return !!this.dappUrl;
+    isVisibleViewer() {
+      return !!this.activeUrl;
     },
+
   },
 
   methods: {
-    ...mapMutations(['changeLoadingStatus', 'changeLoadStatus']),
+    ...mapMutations(['changeLoadingStatus']),
     ...mapActions([
       'auth',
       'getAccountData',
+      'beforeInject',
       'inject',
-      'reset',
       'init',
       'openAccount',
     ]),
@@ -70,12 +73,17 @@ export default {
     },
 
     handleSubmitUrl() {
-      this.handleUrlChange();
+      const newUrl = this.url;
+      if (this.activeUrl === newUrl) {
+        return;
+      }
 
-      this.dappUrl = `/${this.url}`;
-      this.changeRoutePath(this.url);
+      this.beforeInject();
 
-      this.changeLoadingStatus(true);
+      this.activeUrl = newUrl;
+      this.viewerUrl = `/${newUrl}`;
+
+      this.changeRoutePath(newUrl);
     },
 
     handleOpenAccount() {
@@ -90,24 +98,17 @@ export default {
       }
     },
 
-    handleUrlChange() {
-      if (this.loaded) {
-        this.reset();
-      }
-    },
-
     onViewerLoad() {
       try {
         const { viewer } = this.$refs;
         get(viewer.contentWindow, 'location');
 
-        this.changeLoadStatus(true);
         this.inject(viewer.contentWindow);
       } catch (err) {
         this.error =
           'Page is not loaded. Try load other page or reload current.';
       } finally {
-        //this.changeLoadingStatus(false);
+        this.changeLoadingStatus(LOAD_STATE.LOADED);
       }
     },
 

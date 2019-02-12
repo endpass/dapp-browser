@@ -23,10 +23,10 @@
           {{ buttonLabel }}
         </VButton>
       </div>
-      <Message v-if="error" :danger="true">
-        {{ error }}
-      </Message>
     </form>
+    <Message v-if="error" :danger="true">
+      {{ error }}
+    </Message>
     <div class="browser-controls__links">
       <DappLink
         v-for="dapp in dapps"
@@ -58,7 +58,7 @@ export default {
       default: '',
     },
 
-    loading: {
+    isLoading: {
       type: Boolean,
       default: false,
     },
@@ -86,7 +86,7 @@ export default {
     },
 
     buttonLabel() {
-      if (this.loading) {
+      if (this.isLoading) {
         return 'Loading...';
       }
       return 'Open';
@@ -123,10 +123,12 @@ export default {
 </script>
 
 <style lang="postcss">
+.browser-controls {
+  padding: 10px 16px;
+}
 .browser-controls__form {
   display: flex;
   align-items: center;
-  padding: 10px 16px;
 }
 
 .browser-controls__input-wrapper {
@@ -170,7 +172,7 @@ export default {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
-  padding: 11px 9px;
+  padding-top: 9px;
 }
 
 @media (max-width: 768px) {
