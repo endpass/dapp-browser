@@ -15,7 +15,6 @@ export default [
     url: 'https://dogesontrial.dog/',
     name: 'Dogesontrial',
     icon: 'https://dogesontrial.dog/favicon.ico',
-    title: 'Doges on Trial'
-  }
-
-]
+    title: 'Doges on Trial',
+  },
+];

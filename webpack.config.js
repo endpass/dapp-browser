@@ -35,7 +35,11 @@ const config = {
     aggregateTimeout: 100,
   },
 
-  devtool: WEBPACK_MODE === 'development' && 'cheap-module-eval-source-map',
+  devtool:
+    (WEBPACK_MODE === 'development' ||
+      NODE_ENV === 'development' ||
+      NODE_ENV === 'local') &&
+    'cheap-module-eval-source-map',
 
   plugins: [
     new webpack.HotModuleReplacementPlugin(),

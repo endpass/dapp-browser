@@ -1,7 +1,15 @@
 <template>
-  <button class="dapp-link" @click="emitClick" type="button" :title="title" name="button">
+  <button
+    class="dapp-link"
+    type="button"
+    :title="title"
+    name="button"
+    @click="emitClick"
+  >
     <img class="dapp-link__icon" :src="icon" :alt="name" />
-    <span class="dapp-link__name">{{name}}</span>
+    <span class="dapp-link__name">
+      {{ name }}
+    </span>
   </button>
 </template>
 
@@ -32,27 +40,27 @@ export default {
 </script>
 
 <style lang="postcss">
-  .dapp-link {
-    padding: 5px;
-    background: transparent;
+.dapp-link {
+  padding: 5px;
+  background: transparent;
+  display: flex;
+  border: none;
+  cursor: pointer;
+  width: 120px;
+  &__icon {
+    flex: 0 0 auto;
     display: flex;
-    border: none;
-    cursor: pointer;
-    width: 120px;
-    &__icon {
-      flex: 0 0 auto;
-      display: flex;
-      max-width: 20px;
-    }
-    &__name {
-      display: block;
-      flex: 1 1 auto;
-      text-align:left;
-      line-height: 20px;
-      margin-left: 7px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-    }
+    max-width: 20px;
   }
+  &__name {
+    display: block;
+    flex: 1 1 auto;
+    text-align: left;
+    line-height: 20px;
+    margin-left: 7px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
 </style>
