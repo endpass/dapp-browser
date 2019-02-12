@@ -1,9 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const { getEnv } = require('./env');
 
 /**
@@ -24,13 +22,6 @@ const config = {
     devtool: SOURCE_MAP && 'cheap-module-eval-source-map',
 
     plugins: [
-      new webpack.HotModuleReplacementPlugin(),
-      new SimpleProgressWebpackPlugin({
-        format: WEBPACK_MODE === 'development' ? 'minimal' : 'compact',
-      }),
-      new ExtractTextPlugin(
-        WEBPACK_MODE === 'development' ? 'main.css' : 'main.[hash:16].css',
-      ),
       new HtmlWebpackPlugin({
         template: path.resolve(PUBLIC_PATH, './index.html'),
       }),
@@ -40,8 +31,38 @@ const config = {
     ],
   },
 
+  pluginOptions: {
+    svgSprite: {
+      /*
+       * The directory containing your SVG files.
+       */
+      dir: 'src/assets/icons',
+      /*
+       * The reqex that will be used for the Webpack rule.
+       */
+      test: /\.(svg)(\?.*)?$/,
+      /*
+       * @see https://github.com/kisenka/svg-sprite-loader#configuration
+       */
+      loaderOptions: {
+        extract: true,
+        spriteFilename: 'img/icons.[hash:8].svg', // or 'img/icons.svg' if filenameHashing == false
+      },
+      /*
+       * @see https://github.com/kisenka/svg-sprite-loader#configuration
+       */
+      pluginOptions: {
+        plainSprite: true,
+      },
+    },
+  },
+
   chainWebpack: config => {
     config.resolve.alias.set('@', path.resolve(__dirname, './src'));
+    config.module
+      .rule('svg-sprite')
+      .use('svgo-loader')
+      .loader('svgo-loader');
   },
   devServer: {
     port: PORT,
@@ -65,6 +86,5 @@ if (WEBPACK_MODE === 'development') {
     }),
   );
 }
-
 
 module.exports = config;
