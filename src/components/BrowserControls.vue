@@ -3,12 +3,14 @@
     <form class="browser-controls__form" @submit.prevent="emitSubmit">
       <div class="browser-controls__input-wrapper">
         <button
-          v-if="authorized"
           class="browser-controls__avatar"
           type="button"
           @click="emitAccount"
         >
-          <Identicon :address="address" />
+          <Identicon
+            v-if="authorized"
+            :address="address"
+          />
         </button>
         <div class="browser-controls__input">
           <VInput

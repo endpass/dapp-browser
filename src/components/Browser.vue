@@ -54,7 +54,6 @@ export default {
     isVisibleViewer() {
       return !!this.activeUrl;
     },
-
   },
 
   methods: {
