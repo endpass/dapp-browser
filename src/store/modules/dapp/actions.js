@@ -21,12 +21,12 @@ const inject = async ({ state, commit, dispatch }, dappWindow) => {
 
 const toInitial = ({ commit }) => {
   commit('changeInjectStatus', false);
-  commit('changeLoadingStatus', LOAD_STATE.INITIAL);
+  commit('changeLoadState', LOAD_STATE.INITIAL);
 };
 
 const beforeInject = ({ commit }) => {
   commit('changeInjectStatus', false);
-  commit('changeLoadingStatus', LOAD_STATE.LOADING);
+  commit('changeLoadState', LOAD_STATE.LOADING);
 };
 
 const setProviderSettings = ({ state }) => {
@@ -70,8 +70,7 @@ const openAccount = async ({ commit, dispatch }) => {
   const { type, payload } = await connect.openAccount();
 
   if (type === 'logout') {
-    commit('setAccountData', null);
-    await dispatch('toInitial');
+    await dispatch('logout');
   } else if (type === 'update') {
     commit('setAccountData', payload);
     await dispatch('setProviderSettings');

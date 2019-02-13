@@ -2,7 +2,7 @@ const changeInjectStatus = (state, status) => {
   state.injected = status;
 };
 
-const changeLoadingStatus = (state, status) => {
+const changeLoadState = (state, status) => {
   state.loadState = status;
 };
 
@@ -12,6 +12,6 @@ const setAccountData = (state, data) => {
 
 export default {
   changeInjectStatus,
-  changeLoadingStatus,
+  changeLoadState,
   setAccountData,
 };

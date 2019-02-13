@@ -2,8 +2,9 @@
   <div class="browser">
     <section v-if="inited" class="browser__controls">
       <BrowserControls
-        v-model="url"
-        :isLoading="isLoading"
+        v-model="inputUrl"
+        :is-loading="isLoading"
+        :is-same-url="isSameUrl"
         :address="activeAccount"
         :error="error"
         @submit="handleSubmitUrl"
@@ -11,7 +12,7 @@
         @auth="handleAuthRequest"
       />
     </section>
-    <section class="browser__frame">
+    <section :class="browserFrame">
       <iframe
         v-if="isVisibleViewer"
         v-show="!isLoading"
@@ -34,8 +35,8 @@ export default {
   name: 'Browser',
 
   data: () => ({
-    url: '',
-    activeUrl: '',
+    inputUrl: '',
+    checkUrl: '',
     viewerUrl: '',
     inited: false,
     error: null,
@@ -45,22 +46,35 @@ export default {
     ...mapState({
       accountData: state => state.dapp.accountData,
       isLoading: state => state.dapp.loadState === LOAD_STATE.LOADING,
+      isLoaded: state => state.dapp.loadState === LOAD_STATE.LOADED,
     }),
+
+    browserFrame() {
+      return {
+        browser__frame: true,
+        'browser__frame-loaded': this.isLoaded,
+      };
+    },
 
     activeAccount() {
       return get(this.accountData, 'activeAccount');
     },
 
     isVisibleViewer() {
-      return !!this.activeUrl;
+      return !!this.checkUrl;
+    },
+
+    isSameUrl() {
+      return this.inputUrl === this.checkUrl;
     },
   },
 
   methods: {
-    ...mapMutations(['changeLoadingStatus']),
+    ...mapMutations(['changeLoadState']),
     ...mapActions([
       'auth',
       'getAccountData',
+      'toInitial',
       'beforeInject',
       'inject',
       'init',
@@ -72,14 +86,14 @@ export default {
     },
 
     handleSubmitUrl() {
-      const newUrl = this.url;
-      if (this.activeUrl === newUrl) {
+      const newUrl = this.inputUrl;
+      if (this.isSameUrl) {
         return;
       }
 
-      this.beforeInject();
+      newUrl ? this.beforeInject() : this.toInitial();
 
-      this.activeUrl = newUrl;
+      this.checkUrl = newUrl;
       this.viewerUrl = `/${newUrl}`;
 
       this.changeRoutePath(newUrl);
@@ -107,14 +121,14 @@ export default {
         this.error =
           'Page is not loaded. Try load other page or reload current.';
       } finally {
-        this.changeLoadingStatus(LOAD_STATE.LOADED);
+        this.changeLoadState(LOAD_STATE.LOADED);
       }
     },
 
     loadByPathQuery() {
       const url = this.$route.query.url;
       if (url) {
-        this.url = url;
+        this.inputUrl = url;
         this.handleSubmitUrl();
       }
     },
@@ -170,6 +184,10 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
   background-size: 15%;
+}
+
+.browser__frame-loaded {
+  background: none;
 }
 
 .browser__viewer {
