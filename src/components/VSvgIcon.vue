@@ -6,9 +6,6 @@
     :fill="fill"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <title v-if="title">
-      {{ title }}
-    </title>
     <use :xlink:href="iconPath" xmlns:xlink="http://www.w3.org/1999/xlink" />
   </svg>
 </template>
@@ -24,7 +21,7 @@ export default {
       required: true,
     },
     width: {
-      type: [String, Number],
+      type: [String],
       default: '20px',
     },
     fill: {
@@ -35,15 +32,10 @@ export default {
       type: String,
       default: '20px',
     },
-    title: {
-      type: String,
-      default: null,
-    },
   },
   computed: {
     iconPath() {
       const block = require(`@/assets/icons/${this.name}.svg`);
-      console.log('block', block);
       const url = get(block, 'default.url');
       return url;
     },
@@ -53,3 +45,9 @@ export default {
   },
 };
 </script>
+
+<style lang="postcss">
+.svg-icon {
+  margin: 0 auto;
+}
+</style>

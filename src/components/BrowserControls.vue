@@ -7,14 +7,7 @@
           type="button"
           @click="emitAccount"
         >
-          <Identicon
-            v-if="authorized"
-            :address="address"
-          />
-          <v-svg-icon
-            v-else
-            name="account-login"
-          />
+          <Identicon :authorized="authorized" :address="address" />
         </button>
         <div class="browser-controls__input">
           <VInput
@@ -25,7 +18,11 @@
         </div>
       </div>
       <div class="browser-controls__button">
-        <VButton type="primary" @click="emitSubmit">
+        <VButton
+          :disabled="isSameUrl && isLoading"
+          submit
+          type="primary"
+        >
           {{ buttonLabel }}
         </VButton>
       </div>
@@ -41,7 +38,7 @@
         :name="dapp.name"
         :title="dapp.title"
         :icon="dapp.icon"
-        @click="onSelectExample(dapp.url)"
+        @click="onClickDappBookmark(dapp.url)"
       />
     </div>
   </div>
@@ -54,7 +51,6 @@ import VInput from './VInput.vue';
 import DappLink from './DappLink.vue';
 import Message from './Message.vue';
 import Identicon from './Identicon.vue';
-import VSvgIcon from './VSvgIcon';
 
 export default {
   name: 'BrowserControls',
@@ -63,6 +59,11 @@ export default {
     value: {
       type: String,
       default: '',
+    },
+
+    isSameUrl: {
+      type: Boolean,
+      default: false,
     },
 
     isLoading: {
@@ -93,15 +94,12 @@ export default {
     },
 
     buttonLabel() {
-      if (this.isLoading) {
-        return 'Loading...';
-      }
-      return 'Open';
+      return this.isLoading ? 'Loading...' : 'Open';
     },
   },
 
   methods: {
-    onSelectExample(url) {
+    onClickDappBookmark(url) {
       this.emitInput(url);
       this.emitSubmit();
     },
@@ -115,7 +113,7 @@ export default {
     },
 
     emitAccount() {
-      this.$emit('account');
+      this.authorized ? this.$emit('account') : this.$emit('auth');
     },
   },
 
@@ -125,7 +123,6 @@ export default {
     Identicon,
     DappLink,
     Message,
-    VSvgIcon,
   },
 };
 </script>
@@ -134,6 +131,7 @@ export default {
 .browser-controls {
   padding: 10px 16px;
 }
+
 .browser-controls__form {
   display: flex;
   align-items: center;
