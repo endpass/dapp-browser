@@ -19,6 +19,8 @@ const config = {
   lintOnSave: false,
 
   configureWebpack: {
+    resolve: { symlinks: false },
+
     devtool: SOURCE_MAP && 'cheap-module-eval-source-map',
 
     plugins: [
