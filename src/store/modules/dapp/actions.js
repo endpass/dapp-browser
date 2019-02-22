@@ -2,7 +2,7 @@ import { connect, web3 } from '@/class/singleton';
 import { LOAD_STATE } from '@/constants';
 
 const init = () => {
-  const provider = connect.extendProvider(web3.providers.HttpProvider);
+  const provider = connect.getProvider(web3.providers.HttpProvider);
 
   web3.setProvider(provider);
 };

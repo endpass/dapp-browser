@@ -14,8 +14,8 @@
     </section>
     <section :class="browserFrame">
       <iframe
-        v-if="isVisibleViewer"
-        v-show="!isLoading"
+        v-if="!preventLoad"
+        v-show="isVisibleViewer && !isLoading"
         ref="viewer"
         class="browser__viewer"
         :src="viewerUrl"
@@ -39,6 +39,7 @@ export default {
     checkUrl: '',
     viewerUrl: '',
     inited: false,
+    preventLoad: false,
     error: null,
   }),
 
@@ -90,9 +91,10 @@ export default {
       if (this.isSameUrl) {
         return;
       }
-
+      // eslint-disable-next-line
       newUrl ? this.beforeInject() : this.toInitial();
 
+      this.preventLoad = false;
       this.checkUrl = newUrl;
       this.viewerUrl = `/${newUrl}`;
 
@@ -112,24 +114,25 @@ export default {
     },
 
     onViewerLoad() {
-      try {
-        const { viewer } = this.$refs;
-        get(viewer.contentWindow, 'location');
-
-        this.inject(viewer.contentWindow);
-      } catch (err) {
-        this.error =
-          'Page is not loaded. Try load other page or reload current.';
-      } finally {
-        this.changeLoadState(LOAD_STATE.LOADED);
-      }
+      this.changeLoadState(LOAD_STATE.LOADED);
     },
 
     loadByPathQuery() {
-      const url = this.$route.query.url;
+      const { url } = this.$route.query;
       if (url) {
         this.inputUrl = url;
         this.handleSubmitUrl();
+      }
+    },
+
+    onBeforeStart() {
+      try {
+        const { viewer } = this.$refs;
+        this.inject(viewer.contentWindow);
+      } catch (err) {
+        this.preventLoad = true;
+        this.error =
+          'Page is not loaded. Try load other page or reload current.';
       }
     },
   },
@@ -137,6 +140,13 @@ export default {
   async created() {
     this.init();
     await this.getAccountData();
+    this.changeLoadState(LOAD_STATE.LOADED);
+
+    window.addEventListener('message', message => {
+      if (message.data.type === 'proxy.beforeStart') {
+        this.onBeforeStart();
+      }
+    });
 
     this.loadByPathQuery();
 
