@@ -2,79 +2,107 @@
   <div class="browser">
     <section v-if="inited" class="browser__controls">
       <BrowserControls
-        v-model="url"
-        :loading="loading"
+        v-model="inputUrl"
+        :is-loading="isLoading"
+        :is-same-url="isSameUrl"
         :address="activeAccount"
         :error="error"
-        @submit="handleControlsSubmit"
-        @logout="handleControlsLogout"
+        @submit="handleSubmitUrl"
+        @account="handleOpenAccount"
         @auth="handleAuthRequest"
-        @reset="handleControlsReset"
       />
     </section>
-    <section class="browser__frame">
+    <section :class="browserFrame">
       <iframe
-        v-if="loading || loaded"
-        v-show="loaded"
+        v-if="!preventLoad"
+        v-show="isVisibleViewer && !isLoading"
         ref="viewer"
         class="browser__viewer"
-        :src="dappUrl"
-        @load="handleViewerLoad"
+        :src="viewerUrl"
+        @load="onViewerLoad"
       />
     </section>
   </div>
 </template>
 
 <script>
-import { get } from 'lodash';
+import get from 'lodash/get';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import BrowserControls from '@/components/BrowserControls';
+import { LOAD_STATE } from '@/constants';
 
 export default {
   name: 'Browser',
 
   data: () => ({
-    url: '',
+    inputUrl: '',
+    checkUrl: '',
+    viewerUrl: '',
     inited: false,
+    preventLoad: false,
     error: null,
   }),
 
   computed: {
     ...mapState({
       accountData: state => state.dapp.accountData,
-      loading: state => state.dapp.loading,
-      loaded: state => state.dapp.loaded,
+      isLoading: state => state.dapp.loadState === LOAD_STATE.LOADING,
+      isLoaded: state => state.dapp.loadState === LOAD_STATE.LOADED,
     }),
+
+    browserFrame() {
+      return {
+        browser__frame: true,
+        'browser__frame-loaded': this.isLoaded,
+      };
+    },
 
     activeAccount() {
       return get(this.accountData, 'activeAccount');
     },
 
-    dappUrl() {
-      return `/${this.url}`;
+    isVisibleViewer() {
+      return !!this.checkUrl;
     },
-  },
 
-  watch: {
-    url() {
-      this.handleUrlChange();
+    isSameUrl() {
+      return this.inputUrl === this.checkUrl;
     },
   },
 
   methods: {
-    ...mapMutations(['changeLoadingStatus', 'changeLoadStatus']),
-    ...mapActions(['auth', 'logout', 'getAccountData', 'inject', 'reset']),
+    ...mapMutations(['changeLoadState']),
+    ...mapActions([
+      'auth',
+      'getAccountData',
+      'toInitial',
+      'beforeInject',
+      'inject',
+      'init',
+      'openAccount',
+    ]),
 
-    handleControlsSubmit() {
-      this.changeLoadingStatus(true);
+    changeRoutePath(url = '') {
+      this.$router.replace(`?url=${url}`);
     },
 
-    handleControlsLogout() {
-      this.logout();
+    handleSubmitUrl() {
+      const newUrl = this.inputUrl;
+      if (this.isSameUrl) {
+        return;
+      }
+      // eslint-disable-next-line
+      newUrl ? this.beforeInject() : this.toInitial();
+
+      this.preventLoad = false;
+      this.checkUrl = newUrl;
+      this.viewerUrl = `/${newUrl}`;
+
+      this.changeRoutePath(newUrl);
     },
 
-    handleControlsReset() {
-      this.url = '';
+    handleOpenAccount() {
+      this.openAccount();
     },
 
     async handleAuthRequest() {
@@ -85,31 +113,42 @@ export default {
       }
     },
 
-    handleUrlChange() {
-      if (this.loaded) {
-        this.reset();
+    onViewerLoad() {
+      this.changeLoadState(LOAD_STATE.LOADED);
+    },
+
+    loadByPathQuery() {
+      const { url } = this.$route.query;
+      if (url) {
+        this.inputUrl = url;
+        this.handleSubmitUrl();
       }
     },
 
-    handleViewerLoad() {
+    onBeforeStart() {
       try {
         const { viewer } = this.$refs;
-        get(viewer.contentWindow, 'location');
-
-        this.changeLoadStatus(true);
         this.inject(viewer.contentWindow);
       } catch (err) {
-        console.log(err);
+        this.preventLoad = true;
         this.error =
           'Page is not loaded. Try load other page or reload current.';
-      } finally {
-        this.changeLoadingStatus(false);
       }
     },
   },
 
   async created() {
+    this.init();
     await this.getAccountData();
+    this.changeLoadState(LOAD_STATE.LOADED);
+
+    window.addEventListener('message', message => {
+      if (message.data.type === 'proxy.beforeStart') {
+        this.onBeforeStart();
+      }
+    });
+
+    this.loadByPathQuery();
 
     this.inited = true;
   },
@@ -157,11 +196,26 @@ export default {
   background-size: 15%;
 }
 
+.browser__frame-loaded {
+  background: none;
+}
+
 .browser__viewer {
   position: absolute;
-  top: 70px;
+  top: 105px;
   left: 0;
   width: 100%;
-  height: calc(100% - 70px);
+  height: calc(100% - 105px);
+}
+
+@media (max-width: 768px) {
+  .browser__controls {
+    position: static;
+  }
+
+  .browser__viewer {
+    top: 0;
+    height: 100%;
+  }
 }
 </style>

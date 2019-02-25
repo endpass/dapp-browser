@@ -1,0 +1,40 @@
+language: node_js
+node_js:
+- '10'
+cache:
+  directories:
+  - "~/.cache"
+install: yarn install --frozen-lockfile
+script:
+- yarn build:dev
+- mkdir $TRAVIS_BUILD_DIR/dsource
+- cp appspec.yml $TRAVIS_BUILD_DIR/dist
+- cd $TRAVIS_BUILD_DIR/dist
+- zip -r latest *
+- mv latest.zip $TRAVIS_BUILD_DIR/dsource/latest.zip
+- cp $TRAVIS_BUILD_DIR/dsource/latest.zip $TRAVIS_BUILD_DIR/dsource/$TRAVIS_COMMIT.zip
+deploy:
+- provider: s3
+  access_key_id: "$ACCESS_KEY_ID"
+  secret_access_key: "$SECRET_ACCESS_KEY"
+  bucket: endpass-dev-apps
+  region: us-east-1
+  skip_cleanup: true
+  local_dir: "$TRAVIS_BUILD_DIR/dsource/"
+  upload-dir: browser
+  on:
+    branch: master
+- provider: codedeploy
+  access_key_id: "$ACCESS_KEY_ID"
+  secret_access_key: "$SECRET_ACCESS_KEY"
+  bucket: endpass-dev-apps
+  region: us-east-1
+  key: browser/latest.zip
+  bundle: zip
+  application: browser-dev-app
+  deployment_group: browser-dev-deployment-group
+  on:
+    branch: master
+notifications:
+  slack:
+    secure: JKgh/FaAUrtPlLaIoeXCa860hbJzjuUZieYbzsU03dlAyGAPs1S9SaDRt+0C8dngoNjm0bzZXDnwEPO7xKEhrb9V+WJLVjv5HBdBF1iSmhV0JWQqn0VY01NGrJgI8dTP79yKQvKwD/TQ7XYbNNC+6vMoCAjV/ANiQ822jJfu956MCdO0PBqPvem7FfNtFPQFIUmL8GSJy8Z7u7gPyNbcrtjCQ2n+CF0/+62O3rFcXLQw9wYGlVmBM1QvtfW6Yxxcg2+298MXnqNaZIp5E/cKwmG4Xkc3cS00a/pMJXPMzRBDvDD6N4mCakvROrWsx6HesiwYJrOUVOQO8GM/DwFLTwII+q3oLmued6rhqk62/A9wTXqisXUgtT3SvF/BtSUDGFs9WIavqGsW1PfhxeWzSYFIe2EPOVbzIXbIFqCu0UC78LlSRFPUNgmBajYs0xQA/NdYeCYXS9Gt2v/lF3iDN7VISPtCPRZdTpt2k91Blfg/ZHDng0dogaOoD/q+fqhq3KPRqsSJvyTwnTP1Az9bWZkMm7eFWM1obuhVSiaWURjljKOY/5HdJyDUhcRzutF6tARQF7NVGVxArUKhV2M6FaAwJwBT+dVHK/Afvv9mFm1N98YaUfJY9EDWHzl7U3Rw2UkIzxVLdvun+/1BRkQy3cf8heWlXWf/WrIk2ImdIg0=

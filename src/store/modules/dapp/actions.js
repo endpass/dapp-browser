@@ -1,32 +1,45 @@
-import { connect } from '@/class/singleton';
+import { connect, web3 } from '@/class/singleton';
+import { LOAD_STATE } from '@/constants';
+
+const init = () => {
+  const provider = connect.getProvider(web3.providers.HttpProvider);
+
+  web3.setProvider(provider);
+};
 
 const inject = async ({ state, commit, dispatch }, dappWindow) => {
   if (state.injected) return;
 
   commit('changeInjectStatus', true);
-  await dispatch('sendSettings');
-  connect.injectWeb3(dappWindow);
+  await dispatch('setProviderSettings');
+
+  Object.assign(dappWindow, {
+    ethereum: web3.currentProvider,
+    web3,
+  });
 };
 
-const reset = ({ commit }) => {
+const toInitial = ({ commit }) => {
   commit('changeInjectStatus', false);
-  commit('changeLoadStatus', false);
+  commit('changeLoadState', LOAD_STATE.INITIAL);
 };
 
-const sendSettings = ({ state }) => {
+const beforeInject = ({ commit }) => {
+  commit('changeInjectStatus', false);
+  commit('changeLoadState', LOAD_STATE.LOADING);
+};
+
+const setProviderSettings = ({ state }) => {
   const { accountData } = state;
 
   if (accountData) {
-    connect.sendSettings({
-      selectedAddress: accountData.activeAccount,
-      networkVersion: accountData.activeNet,
-    });
+    connect.setProviderSettings(accountData);
   }
 };
 
 const auth = async ({ dispatch }) => {
   try {
-    await connect.auth(window.location.href);
+    await connect.auth(window.location.toString());
     await dispatch('getAccountData');
   } catch (err) {
     console.error(`Auth failed: ${err}`);
@@ -36,7 +49,7 @@ const auth = async ({ dispatch }) => {
 const logout = async ({ dispatch, commit }) => {
   try {
     await connect.logout();
-    await dispatch('reset');
+    await dispatch('toInitial');
     commit('setAccountData', null);
   } catch (err) {
     console.error(`Logout failed: ${err}`);
@@ -53,11 +66,26 @@ const getAccountData = async ({ commit }) => {
   }
 };
 
+const openAccount = async ({ commit, dispatch }) => {
+  const { type, payload } = await connect.openAccount();
+
+  if (type === 'logout') {
+    await dispatch('logout');
+  } else if (type === 'update') {
+    commit('setAccountData', payload);
+    await dispatch('setProviderSettings');
+    await dispatch('toInitial');
+  }
+};
+
 export default {
+  init,
   auth,
   getAccountData,
+  beforeInject,
   inject,
-  sendSettings,
-  reset,
+  setProviderSettings,
+  toInitial,
   logout,
+  openAccount,
 };
