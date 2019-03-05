@@ -5,6 +5,7 @@
         v-model="inputUrl"
         :is-loading="isLoading"
         :is-same-url="isSameUrl"
+        :is-demo-mode="isDemoMode"
         :address="activeAccount"
         :error="error"
         @submit="handleSubmitUrl"
@@ -48,6 +49,7 @@ export default {
       accountData: state => state.dapp.accountData,
       isLoading: state => state.dapp.loadState === LOAD_STATE.LOADING,
       isLoaded: state => state.dapp.loadState === LOAD_STATE.LOADED,
+      isDemoMode: state => state.dapp.isDemoMode,
     }),
 
     browserFrame() {
@@ -74,7 +76,6 @@ export default {
     ...mapMutations(['changeLoadState']),
     ...mapActions([
       'auth',
-      'getAccountData',
       'toInitial',
       'beforeInject',
       'inject',
@@ -107,7 +108,14 @@ export default {
 
     async handleAuthRequest() {
       try {
+        const isDemo = this.isDemoMode;
         await this.auth();
+
+        if (isDemo) {
+          const { viewer } = this.$refs;
+          this.beforeInject();
+          viewer.contentWindow.location.reload();
+        }
       } catch (err) {
         console.error('auth error: ', err);
       }
@@ -138,12 +146,14 @@ export default {
   },
 
   async created() {
-    this.init();
-    await this.getAccountData();
+    await this.init();
     this.changeLoadState(LOAD_STATE.LOADED);
 
     window.addEventListener('message', message => {
-      if (message.data.type === 'proxy.beforeStart') {
+      const type =
+        get(message, 'data.type') || get(message, 'data.message.type');
+
+      if (type === 'proxy.beforeStart') {
         this.onBeforeStart();
       }
     });
@@ -202,7 +212,7 @@ export default {
 
 .browser__viewer {
   position: absolute;
-  top: 105px;
+  top: 119px;
   left: 0;
   width: 100%;
   height: calc(100% - 105px);

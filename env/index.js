@@ -1,7 +1,11 @@
 const prod = require('./prod');
 const dev = require('./dev');
 const test = require('./test');
-const local = require('./local');
+
+let local;
+try {
+  local = require('./local');
+} catch (e) {}
 
 const getEnv = env => {
   switch (env.toLowerCase()) {
@@ -12,7 +16,7 @@ const getEnv = env => {
     case 'test':
       return test;
     default:
-      return local;
+      return local || dev;
   }
 };
 
