@@ -704,15 +704,15 @@
     web3-providers-ws "1.0.0-beta.33"
     web3-utils "1.0.0-beta.33"
 
-"@endpass/connect@^0.15.4-beta":
-  version "0.15.4-beta"
-  resolved "https://registry.yarnpkg.com/@endpass/connect/-/connect-0.15.4-beta.tgz#3ff201896c8872011da85299e38647ec5c8ba6ca"
-  integrity sha512-cob+N9za+HJ1gl9tdq78lWhcNpFx0jS4MgtNhZBy4OVTyk++FuZSDM2YAOmKyrMUux/zCKUZE5bXKKpDkKru6g==
+"@endpass/connect@^0.15.7-beta":
+  version "0.15.7-beta"
+  resolved "https://registry.yarnpkg.com/@endpass/connect/-/connect-0.15.7-beta.tgz#1e5bfdf55c0b29a5e6a61451a0693a738f7df0d5"
+  integrity sha512-L0W6/PRyS+CEP9IEZJFdHOvYW0tpcQdVExhlZY/EVipiSYiatr3JcknC0hC7J/rbRNhvi4TGuA6vL08nlDJ+Ow==
   dependencies:
     lodash.get "^4.4.2"
     lodash.omit "^4.5.0"
     rollup-plugin-flow "^1.1.1"
-    web3-providers-http "1.0.0-beta.37"
+    web3-providers-http "1.0.0-beta.33"
 
 "@endpass/utils@^1.1.2":
   version "1.1.2"
