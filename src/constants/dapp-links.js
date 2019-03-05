@@ -17,4 +17,10 @@ export default [
     icon: 'https://dogesontrial.dog/favicon.ico',
     title: 'Doges on Trial',
   },
+  {
+    url: 'https://0x.org/',
+    name: '0x Exchange',
+    icon: 'https://0x.org/images/favicon/favicon-2-32x32.png',
+    title: 'Powering Decentralized Exchange',
+  },
 ];

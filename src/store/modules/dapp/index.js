@@ -5,6 +5,7 @@ import { LOAD_STATE } from '@/constants';
 export const state = {
   accountData: null,
   injected: false,
+  isDemoMode: false,
   loadState: LOAD_STATE.INITIAL,
 };
 
