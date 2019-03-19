@@ -1,7 +1,9 @@
 import { createConnect, web3, demoAccount } from '@/class/singleton';
 import { LOAD_STATE } from '@/constants';
 
-const basicConnect = createConnect();
+const basicConnect = createConnect({
+  namespace: 'basic',
+});
 let connect = basicConnect;
 let demoConnect;
 
@@ -18,6 +20,7 @@ const init = async ({ commit, dispatch }) => {
 const initDemo = ({ commit }) => {
   if (!demoConnect) {
     demoConnect = createConnect({
+      namespace: 'demo',
       demoData: demoAccount.getDemoData(),
     });
   }
@@ -86,12 +89,12 @@ const logout = async ({ dispatch, commit }) => {
 const openAccount = async ({ state, commit, dispatch }) => {
   const useConnect = state.isDemoMode ? demoConnect : basicConnect;
 
-  const { type, payload } = await useConnect.openAccount();
+  const { type, settings } = await useConnect.openAccount();
 
   if (type === 'logout') {
     await dispatch('logout');
   } else if (type === 'update') {
-    commit('setAccountData', payload);
+    commit('setAccountData', settings);
     await dispatch('setProviderSettings');
     await dispatch('toInitial');
   }
