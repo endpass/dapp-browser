@@ -1,6 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const utils = require('@endpass/utils/build');
+
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const { getEnv } = require('./env');
 
@@ -26,6 +28,9 @@ const config = {
     plugins: [
       new HtmlWebpackPlugin({
         template: path.resolve(PUBLIC_PATH, './index.html'),
+        meta: {
+          build: utils.getCommitHash(),
+        },
       }),
       new webpack.DefinePlugin({
         ENV: JSON.stringify(ENV),
