@@ -18,3 +18,6 @@ permissions:
      mode: 755
      type:
        - directory
+hooks:
+  BeforeInstall:
+    - location: hooks/before_install.sh
