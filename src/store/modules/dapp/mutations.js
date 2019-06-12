@@ -10,8 +10,13 @@ const setAccountData = (state, data) => {
   state.accountData = data;
 };
 
+const setDemoMode = (state, data) => {
+  state.isDemoMode = data;
+};
+
 export default {
   changeInjectStatus,
   changeLoadState,
   setAccountData,
+  setDemoMode,
 };

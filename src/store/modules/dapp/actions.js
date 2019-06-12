@@ -1,14 +1,40 @@
-import { connect, web3 } from '@/class/singleton';
+import { createConnect, web3, demoAccount } from '@/class/singleton';
 import { LOAD_STATE } from '@/constants';
 
-const init = () => {
-  const provider = connect.getProvider(web3.providers.HttpProvider);
+const basicConnect = createConnect({
+  namespace: 'basic',
+});
+let connect = basicConnect;
+let demoConnect;
 
-  web3.setProvider(provider);
+const init = async ({ commit, dispatch }) => {
+  try {
+    const accountData = await basicConnect.getAccountData();
+    commit('setAccountData', accountData);
+    commit('setDemoMode', false);
+  } catch (err) {
+    dispatch('initDemo');
+  }
+};
+
+const initDemo = ({ commit }) => {
+  if (!demoConnect) {
+    demoConnect = createConnect({
+      namespace: 'demo',
+      demoData: demoAccount.getDemoData(),
+    });
+  }
+  connect = demoConnect;
+  const accountData = demoAccount.getSettings();
+  commit('setAccountData', accountData);
+  commit('setDemoMode', true);
 };
 
 const inject = async ({ state, commit, dispatch }, dappWindow) => {
   if (state.injected) return;
+
+  const provider = connect.getProvider();
+  web3.setProvider(provider);
 
   commit('changeInjectStatus', true);
   await dispatch('setProviderSettings');
@@ -31,48 +57,44 @@ const beforeInject = ({ commit }) => {
 
 const setProviderSettings = ({ state }) => {
   const { accountData } = state;
-
   if (accountData) {
     connect.setProviderSettings(accountData);
   }
 };
 
-const auth = async ({ dispatch }) => {
+const auth = async ({ state, dispatch, commit }) => {
   try {
-    await connect.auth(window.location.toString());
-    await dispatch('getAccountData');
+    await basicConnect.auth(window.location.toString());
+    const res = await basicConnect.getAccountData();
+    commit('setAccountData', res);
+    commit('setDemoMode', false);
   } catch (err) {
+    commit('setAccountData', null);
+    dispatch('initDemo');
     console.error(`Auth failed: ${err}`);
   }
 };
 
 const logout = async ({ dispatch, commit }) => {
   try {
-    await connect.logout();
+    await basicConnect.logout();
     await dispatch('toInitial');
     commit('setAccountData', null);
+    dispatch('initDemo');
   } catch (err) {
     console.error(`Logout failed: ${err}`);
   }
 };
 
-const getAccountData = async ({ commit }) => {
-  try {
-    const res = await connect.getAccountData();
+const openAccount = async ({ state, commit, dispatch }) => {
+  const useConnect = state.isDemoMode ? demoConnect : basicConnect;
 
-    commit('setAccountData', res);
-  } catch (err) {
-    commit('setAccountData', null);
-  }
-};
-
-const openAccount = async ({ commit, dispatch }) => {
-  const { type, payload } = await connect.openAccount();
+  const { type, settings } = await useConnect.openAccount();
 
   if (type === 'logout') {
     await dispatch('logout');
   } else if (type === 'update') {
-    commit('setAccountData', payload);
+    commit('setAccountData', settings);
     await dispatch('setProviderSettings');
     await dispatch('toInitial');
   }
@@ -80,8 +102,8 @@ const openAccount = async ({ commit, dispatch }) => {
 
 export default {
   init,
+  initDemo,
   auth,
-  getAccountData,
   beforeInject,
   inject,
   setProviderSettings,

@@ -40,17 +40,31 @@
         :icon="dapp.icon"
         @click="onClickDappBookmark(dapp.url)"
       />
+      <div class="browser-controls__demo-mode" v-if="isDemoMode">
+        <div>
+          <div>Hey! You are in <b>Demo mode!</b> </div>
+          <div>Your password is&nbsp;<b>{{ demoPassword }}</b></div>
+        </div>
+        <VButton
+          @click="emitAuth"
+        >
+          Log in
+        </VButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { demoAccount } from '@/class/singleton';
 import dapps from '@/constants/dapp-links';
 import VButton from './VButton.vue';
 import VInput from './VInput.vue';
 import DappLink from './DappLink.vue';
 import Message from './Message.vue';
 import Identicon from './Identicon.vue';
+import { DEMO_DEFAULT_PASSWORD } from '@/constants';
+
 
 export default {
   name: 'BrowserControls',
@@ -59,6 +73,11 @@ export default {
     value: {
       type: String,
       default: '',
+    },
+
+    isDemoMode: {
+      type: Boolean,
+      default: false,
     },
 
     isSameUrl: {
@@ -96,6 +115,10 @@ export default {
     buttonLabel() {
       return this.isLoading ? 'Loading...' : 'Open';
     },
+
+    demoPassword() {
+      return DEMO_DEFAULT_PASSWORD;
+    },
   },
 
   methods: {
@@ -115,6 +138,10 @@ export default {
     emitAccount() {
       this.authorized ? this.$emit('account') : this.$emit('auth');
     },
+
+    emitAuth() {
+      this.$emit('auth');
+    }
   },
 
   components: {
@@ -179,6 +206,17 @@ export default {
   flex-flow: row wrap;
   align-items: center;
   padding-top: 9px;
+  min-height: 54px;
+}
+
+.browser-controls__demo-mode {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  b {
+    font-weight: bold;
+  }
 }
 
 @media (max-width: 768px) {
