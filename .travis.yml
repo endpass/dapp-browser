@@ -12,7 +12,6 @@ script:
 - cd $TRAVIS_BUILD_DIR/dist/
 - zip -r $TRAVIS_COMMIT *
 - mv $TRAVIS_COMMIT.zip $TRAVIS_BUILD_DIR/dsource/$TRAVIS_COMMIT.zip
-- cp $TRAVIS_BUILD_DIR/dsource/$TRAVIS_COMMIT.zip $TRAVIS_BUILD_DIR/dsource/$TRAVIS_COMMIT.zip
 deploy:
 - provider: s3
   access_key_id: "$ACCESS_KEY_ID"
